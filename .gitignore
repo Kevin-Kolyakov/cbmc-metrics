@@ -1,0 +1,19 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual envs
+.venv/
+venv/
+
+# IDE/editor
+.vscode/
+.idea/
+
+# CBMC metrics outputs (generated)
+*.csv
+cbmc-metrics-workspace/
+
+# Misc
+*.log
+.*.swp
