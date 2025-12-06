@@ -214,6 +214,12 @@ def parse_viewer_result_json(json_dir: Path) -> Dict[str, Any]:
             stats["symex_steps"] = int(m.group(1).replace(",", ""))
             break
 
+    for line in status_lines:
+        m = re.search(r"loop(?:ing)?\s*=\s*([0-9,]+)", line)
+        if m:
+            stats["max_unwind"] = int(m.group(1).replace(",", ""))
+            break
+            
     return stats
 
 
