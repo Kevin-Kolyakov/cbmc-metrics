@@ -14,27 +14,27 @@ from typing import List, Optional, Dict, Any, Tuple
 
 REPOS = [
     "aws/s2n-tls",
-    "aws/aws-lc",
+    #"aws/aws-lc", no proofs found
     "awslabs/aws-c-common",
     "aws/ota-for-aws-iot-embedded-sdk",
     "aws/aws-encryption-sdk-c",
-    "awslabs/LibMLKEM",
-    "aws-samples/aws-stm32-ml-at-edge-accelerator",
-    "aws-samples/aws-iot-alexa-connected-home-demo",
-    "aws-greengrass/aws-greengrass-sdk-lite",
-    "awslabs/aws-verification-model-for-libcrypto",
-    "lkk688/AWSIoTFreeRTOS",
-    "eddelbuettel/pkg-aws-c-common",
-    "FreeRTOS/FreeRTOS-Plus-TCP",
-    "wiznetindia/WizFi360_EVB_PICO_AWS_controlling_LED",
-    "FreeRTOS/coreHTTP",
+    #"awslabs/LibMLKEM", no proofs found
+    "aws-samples/aws-stm32-ml-at-edge-accelerator", 
+    #"aws-samples/aws-iot-alexa-connected-home-demo", proof error
+    #"aws-greengrass/aws-greengrass-sdk-lite", no makefile found
+    #"awslabs/aws-verification-model-for-libcrypto", no proofs found
+    #"lkk688/AWSIoTFreeRTOS", make failed
+    #"eddelbuettel/pkg-aws-c-common", make failed
+    #"FreeRTOS/FreeRTOS-Plus-TCP", no makefile
+    #"wiznetindia/WizFi360_EVB_PICO_AWS_controlling_LED", make failed
+    #"FreeRTOS/coreHTTP", # doesnt print properly?
     "FreeRTOS/FreeRTOS-Cellular-Interface",
-    "FreeRTOS/corePKCS11",
-    "FreeRTOS/coreSNTP",
+    #"FreeRTOS/corePKCS11", # doesnt print properly?
+    #"FreeRTOS/coreSNTP", # doesnt print properly?
     "1NCE-GmbH/blueprint-freertos",
-    "ambiot/amazon-freertos",
-    "TF-RMM/tf-rmm",
-    "thufv/Deagle",
+    #"ambiot/amazon-freertos", #make failed
+    #"TF-RMM/tf-rmm", # no proofs found
+    #"thufv/Deagle", # no proofs found
 ]
 
 @dataclass
@@ -214,11 +214,31 @@ def parse_viewer_result_json(json_dir: Path) -> Dict[str, Any]:
             stats["symex_steps"] = int(m.group(1).replace(",", ""))
             break
 
+    max_unwind_found = False
     for line in status_lines:
         m = re.search(r"loop(?:ing)?\s*=\s*([0-9,]+)", line)
         if m:
             stats["max_unwind"] = int(m.group(1).replace(",", ""))
+            max_unwind_found = True
             break
+
+    if not max_unwind_found:
+        loop_path = json_dir / "viewer-loop.json"
+        has_loops = None
+        try:
+            if loop_path.is_file():
+                loop_raw = json.loads(loop_path.read_text(encoding="utf-8"))
+                vl = loop_raw.get("viewer-loop", loop_raw)
+                loops = vl.get("loops", {})
+                if isinstance(loops, dict):
+                    has_loops = bool(loops)
+        except Exception:
+            has_loops = None
+
+        if has_loops is True:
+            stats["max_unwind"] = 0
+        elif has_loops is False or has_loops is None:
+            stats["max_unwind"] = -1
             
     return stats
 
