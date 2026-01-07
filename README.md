@@ -14,7 +14,7 @@ Script to collect certain metrics from CBMC proofs across multiple repos.
 | `symex_steps`       | Working                         |
 | `sat_vars`          | Sometimes missing per proof     |
 | `sat_clauses`       | Sometimes missing per proof     |
-| `max_unwind`        | Not working yet                 |
+| `max_unwind`        | Working                         |
 | `runtime_seconds`   | Working                         |
 | `total_coverage`    | Working                         |
 | `target_coverage`   | Working                         |
