@@ -2,6 +2,16 @@
 
 Script to collect certain metrics from CBMC proofs across multiple repos.
 
+# Example Usage
+
+python3 collect_cbmc_metrics.py \
+  --repo owner/example-cbmc-repo \
+  --workspace cbmc-metrics-workspace \
+  --output cbmc_metrics.csv \
+  --run-cbmc \
+  --proof-timeout 300
+
+
 ### Metric Status
 
 | Field               | Status                          |
