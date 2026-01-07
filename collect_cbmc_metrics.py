@@ -9,33 +9,108 @@ import sys
 import time
 from dataclasses import dataclass, asdict
 from pathlib import Path
-from typing import List, Optional, Dict, Any, Tuple
+from typing import List, Optional, Dict, Any, Tuple, Set, Union
 
 
 REPOS = [
     "aws/s2n-tls",
-    #"aws/aws-lc", no proofs found
+    # "aws/aws-lc", no proofs found
     "awslabs/aws-c-common",
     "aws/ota-for-aws-iot-embedded-sdk",
     "aws/aws-encryption-sdk-c",
-    #"awslabs/LibMLKEM", no proofs found
-    "aws-samples/aws-stm32-ml-at-edge-accelerator", 
-    #"aws-samples/aws-iot-alexa-connected-home-demo", proof error
-    #"aws-greengrass/aws-greengrass-sdk-lite", no makefile found
-    #"awslabs/aws-verification-model-for-libcrypto", no proofs found
-    #"lkk688/AWSIoTFreeRTOS", make failed
-    #"eddelbuettel/pkg-aws-c-common", make failed
-    #"FreeRTOS/FreeRTOS-Plus-TCP", no makefile
-    #"wiznetindia/WizFi360_EVB_PICO_AWS_controlling_LED", make failed
-    #"FreeRTOS/coreHTTP", # doesnt print properly?
+    # "awslabs/LibMLKEM", no proofs found
+    "aws-samples/aws-stm32-ml-at-edge-accelerator",
+    # "aws-samples/aws-iot-alexa-connected-home-demo", proof error
+    # "aws-greengrass/aws-greengrass-sdk-lite", no makefile found
+    # "awslabs/aws-verification-model-for-libcrypto", no proofs found
+    # "lkk688/AWSIoTFreeRTOS", make failed
+    # "eddelbuettel/pkg-aws-c-common", make failed
+    # "FreeRTOS/FreeRTOS-Plus-TCP", no makefile
+    # "wiznetindia/WizFi360_EVB_PICO_AWS_controlling_LED", make failed
+    # "FreeRTOS/coreHTTP", # doesnt print properly?
     "FreeRTOS/FreeRTOS-Cellular-Interface",
-    #"FreeRTOS/corePKCS11", # doesnt print properly?
-    #"FreeRTOS/coreSNTP", # doesnt print properly?
+    # "FreeRTOS/corePKCS11", # doesnt print properly?
+    # "FreeRTOS/coreSNTP", # doesnt print properly?
     "1NCE-GmbH/blueprint-freertos",
-    #"ambiot/amazon-freertos", #make failed
-    #"TF-RMM/tf-rmm", # no proofs found
-    #"thufv/Deagle", # no proofs found
+    # "ambiot/amazon-freertos", #make failed
+    # "TF-RMM/tf-rmm", # no proofs found
+    # "thufv/Deagle", # no proofs found
 ]
+
+# Hard-coded skip list by proof directory name (proof_id).
+# Add whatever you want here.
+SKIP_PROOFS: Set[str] = {
+    "Cellular_ATRemoveLeadingWhiteSpaces",
+    "Cellular_ATRemoveAllDoubleQuote",
+    "Cellular_ATRemoveAllWhiteSpaces",
+    "Cellular_ATcheckErrorCode",
+    "Cellular_ATRemoveTrailingWhiteSpaces",
+    "Cellular_ATStrDup",
+    "Cellular_ATHexStrToHex",
+    "_Cellular_PdnEventCallback",
+    "Cellular_ATRemoveOutermostDoubleQuote",
+    "Cellular_CommonCreateSocket",
+    "Cellular_CommonGetNetworkTime",
+    "_Cellular_ComputeSignalBars",
+    "Cellular_CommonSetEidrxSettings",
+    "Cellular_CommonSetEidrxSettings",
+    "Cellular_ATRemovePrefix",
+    "s2n_stuffer_private_key_from_pem",
+    "aws_array_list_push_front",
+    "aws_hash_table_remove",
+    "aws_priority_queue_s_sift_down",
+    "aws_array_list_erase",
+    "aws_string_eq_byte_cursor",
+    "aws_hash_table_find",
+    "aws_priority_queue_push",
+    "aws_hash_iter_done",
+    "aws_byte_cursor_read",
+    "aws_priority_queue_s_sift_either",
+    "aws_byte_cursor_compare_lookup",
+    "aws_hash_table_put",
+    "aws_array_list_push_back",
+    "aws_priority_queue_push_ref",
+    "aws_byte_cursor_read_be64",
+    "aws_hash_table_move",
+    "aws_hash_table_create",
+    "aws_priority_queue_s_remove_node",
+    "aws_cryptosdk_keyring_trace_record_init_clone",
+    "aws_cryptosdk_keyring_trace_record_clean_up",
+    "aws_cryptosdk_private_commitment_eq",
+    "aws_cryptosdk_sig_get_pubkey",
+    "sign_header",
+    "aws_cryptosdk_priv_algorithm_allowed_for_encrypt",
+    "aws_cryptosdk_aes_gcm_encrypt",
+    "aws_cryptosdk_priv_hdr_parse_iv_len",
+    "aws_cryptosdk_priv_hdr_parse_reserved",
+    "aws_cryptosdk_enc_ctx_serialize",
+    "aws_cryptosdk_rsa_encrypt",
+    "aws_cryptosdk_default_cmm_set_alg_id",
+    "aws_cryptosdk_keyring_trace_copy_all",
+    "aws_cryptosdk_edk_list_clean_up",
+    "aws_cryptosdk_sig_sign_finish",
+    "aws_cryptosdk_priv_hdr_parse_header_version",
+    "aws_cryptosdk_keyring_trace_add_record",
+    "aws_cryptosdk_enc_ctx_clone",
+    "aws_cryptosdk_priv_hdr_parse_auth_tag",
+    "aws_cryptosdk_keyring_trace_eq",
+    "aws_cryptosdk_hdr_size",   
+    "aws_cryptosdk_cmm_release",
+    "aws_cryptosdk_keyring_trace_add_record_buf",
+    "aws_cryptosdk_aes_gcm_decrypt",
+    "aws_cryptosdk_sig_sign_start_keygen",
+    "aws_cryptosdk_md_finish",
+    "aws_cryptosdk_priv_hdr_parse_edks",
+    "aws_cryptosdk_priv_hdr_parse_message_type",
+    "aws_cryptosdk_cmm_generate_enc_materials",
+    "aws_cryptosdk_enc_ctx_clear",
+    "aws_cryptosdk_sig_update",
+    
+}
+
+# Marker file name used to remember a proof was already attempted.
+ATTEMPT_MARKER = ".cbmc_attempted"
+
 
 @dataclass
 class ProofMetrics:
@@ -50,9 +125,9 @@ class ProofMetrics:
     num_func_models: Optional[int] = None
 
     symex_steps: Optional[int] = None
-    sat_vars: Optional[int] = None  # sometimes doesn't appear depending on the repo and proof
-    sat_clauses: Optional[int] = None # sometimes doesn't appear depending on the repo and proof
-    max_unwind: Optional[int] = None # doesn't appear if no unwindings
+    sat_vars: Optional[int] = None
+    sat_clauses: Optional[int] = None
+    max_unwind: Optional[int] = None
 
     runtime_seconds: Optional[float] = None
     total_coverage: Optional[float] = None
@@ -61,6 +136,38 @@ class ProofMetrics:
 
     def to_row(self) -> Dict[str, Any]:
         return asdict(self)
+
+
+def _as_text(x: Union[str, bytes, None]) -> str:
+    if x is None:
+        return ""
+    if isinstance(x, bytes):
+        return x.decode("utf-8", errors="replace")
+    return x
+
+
+def load_completed_keys(csv_path: Path) -> Set[Tuple[str, str]]:
+    """
+    Read an existing CSV and return completed proof keys as (repo, proof_id).
+    Used for resume mode.
+    """
+    completed: Set[Tuple[str, str]] = set()
+    if not csv_path.exists() or csv_path.stat().st_size == 0:
+        return completed
+
+    try:
+        with csv_path.open("r", newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            if not reader.fieldnames:
+                return completed
+            for row in reader:
+                r = (row.get("repo") or "").strip()
+                p = (row.get("proof_id") or "").strip()
+                if r and p:
+                    completed.add((r, p))
+    except Exception as e:
+        print(f"[WARN] Could not read existing CSV for resume: {csv_path} ({e})")
+    return completed
 
 
 def safe_read_text(path: Path) -> str:
@@ -92,6 +199,7 @@ def git_clone(repo: str, dest_root: Path, skip_if_exists: bool = True) -> Path:
         raise RuntimeError(f"git clone failed for {repo}:\n{result.stdout}\n{result.stderr}")
     return repo_dir
 
+
 def find_proof_dirs(repo_root: Path) -> List[Path]:
     proof_dirs: List[Path] = []
 
@@ -103,7 +211,7 @@ def find_proof_dirs(repo_root: Path) -> List[Path]:
                 if sub.is_dir() and list(sub.rglob("*.c")):
                     proof_dirs.append(sub)
 
-    #trying to find proof directories
+    # trying to find proof directories
     for proofs_root in repo_root.rglob("proofs"):
         if not proofs_root.is_dir():
             continue
@@ -124,6 +232,7 @@ def find_proof_dirs(repo_root: Path) -> List[Path]:
             seen.add(rp)
             uniq.append(rp)
     return uniq
+
 
 def count_lines_of_code(harness_files: List[Path]) -> int:
     loc = 0
@@ -162,6 +271,7 @@ def count_models_in_files(files: List[Path]) -> Tuple[int, int]:
 
     return var_models, func_models
 
+
 def get_viewer_json_dir(proof_dir: Path) -> Optional[Path]:
     json_dir = proof_dir / "report" / "json"
     if json_dir.is_dir():
@@ -190,7 +300,7 @@ def parse_viewer_result_json(json_dir: Path) -> Dict[str, Any]:
 
     status_lines = vr.get("status") or []
 
-    # SAT vars and clausses
+    # SAT vars and clauses
     last_vars = last_clauses = None
     for line in status_lines:
         m = re.search(r"([0-9,]+)\s+variables,\s*([0-9,]+)\s+clauses", line)
@@ -239,7 +349,7 @@ def parse_viewer_result_json(json_dir: Path) -> Dict[str, Any]:
             stats["max_unwind"] = 0
         elif has_loops is False or has_loops is None:
             stats["max_unwind"] = -1
-            
+
     return stats
 
 
@@ -258,7 +368,6 @@ def parse_viewer_coverage_json(json_dir: Path) -> Dict[str, Any]:
     stats: Dict[str, Any] = {}
 
     if "percentage" in overall:
-        # convert to percentage
         pct = float(overall["percentage"]) * 100.0
         stats["total_coverage"] = pct
         stats["target_coverage"] = pct
@@ -266,45 +375,55 @@ def parse_viewer_coverage_json(json_dir: Path) -> Dict[str, Any]:
     return stats
 
 
-def run_cbmc_for_proof(proof_dir: Path) -> Tuple[Optional[float], str]:
+def run_cbmc_for_proof(proof_dir: Path, timeout_seconds: int) -> Tuple[Optional[float], str, bool]:
+    """
+    Returns (elapsed_seconds, combined_output, timed_out)
+    """
     makefile = proof_dir / "Makefile"
     if not makefile.exists():
         print(f"[INFO] No Makefile in {proof_dir}, skipping CBMC run.")
-        return None, ""
+        return None, "", False
 
     env = os.environ.copy()
 
-    print(f"[INFO] Running 'make' in {proof_dir}")
+    print(f"[INFO] Running 'make' in {proof_dir} (timeout={timeout_seconds}s)")
     start = time.time()
-    result = subprocess.run(
-        ["make"],
-        cwd=str(proof_dir),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-        env=env,
-    )
-    end = time.time()
-    elapsed = end - start
-
-    combined_output = result.stdout + "\n" + result.stderr
-
-    if result.returncode != 0:
-        print(
-            f"[WARN] 'make' failed in {proof_dir} (exit {result.returncode}). "
-            f"JSON reports may still contain useful info."
+    try:
+        result = subprocess.run(
+            ["make"],
+            cwd=str(proof_dir),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,  # stdout/stderr become str in most cases
+            env=env,
+            timeout=timeout_seconds,
         )
-    else:
-        print(f"[INFO] 'make' in {proof_dir} finished in {elapsed:.2f}s")
+        elapsed = time.time() - start
+        combined_output = _as_text(result.stdout) + "\n" + _as_text(result.stderr)
 
-    return elapsed, combined_output
+        if result.returncode != 0:
+            print(
+                f"[WARN] 'make' failed in {proof_dir} (exit {result.returncode}). "
+                f"JSON reports may still contain useful info."
+            )
+        else:
+            print(f"[INFO] 'make' in {proof_dir} finished in {elapsed:.2f}s")
+
+        return elapsed, combined_output, False
+
+    except subprocess.TimeoutExpired as e:
+        elapsed = time.time() - start
+        out = _as_text(e.stdout) + "\n" + _as_text(e.stderr)
+        print(f"[WARN] Timeout after {timeout_seconds}s; skipping proof: {proof_dir}")
+        return elapsed, out, True
 
 
 def collect_metrics_for_proof(
     repo_name: str,
     proof_dir: Path,
     run_cbmc_flag: bool = False,
-) -> ProofMetrics:
+    timeout_seconds: int = 30,
+) -> Optional[ProofMetrics]:
     proof_id = proof_dir.name
     metrics = ProofMetrics(
         repo=repo_name,
@@ -328,16 +447,15 @@ def collect_metrics_for_proof(
         metrics.num_func_models = fm
         metrics.files_in_scope = len(all_c_files)
 
-    elapsed: Optional[float] = None
-    cbmc_output = ""
     if run_cbmc_flag:
-        elapsed, cbmc_output = run_cbmc_for_proof(proof_dir)
+        elapsed, _cbmc_output, timed_out = run_cbmc_for_proof(proof_dir, timeout_seconds)
+        if timed_out:
+            return None  # skip this proof entirely
         if elapsed is not None:
             metrics.runtime_seconds = round(elapsed, 3)
 
     json_dir = get_viewer_json_dir(proof_dir)
     if json_dir is not None:
-        # Prefer cbmc-viewer JSON if available
         cov_stats = parse_viewer_coverage_json(json_dir)
         for k in ("total_coverage", "target_coverage"):
             v = cov_stats.get(k)
@@ -346,15 +464,12 @@ def collect_metrics_for_proof(
 
         res_stats = parse_viewer_result_json(json_dir)
         for k, v in res_stats.items():
-            # Do not overwrite wall-clock runtime from make
             if k == "runtime_seconds" and metrics.runtime_seconds is not None:
                 continue
             if getattr(metrics, k) is None and v is not None:
                 setattr(metrics, k, v)
 
     return metrics
-
-
 
 
 def append_metrics_row(metrics: ProofMetrics, output_path: Path) -> None:
@@ -370,6 +485,7 @@ def append_metrics_row(metrics: ProofMetrics, output_path: Path) -> None:
             writer.writeheader()
         writer.writerow(row)
 
+
 def collect_metrics_for_repo(
     repo: str,
     workspace: Path,
@@ -377,6 +493,11 @@ def collect_metrics_for_repo(
     run_cbmc_flag: bool = False,
     proof_filter: Optional[str] = None,
     output_path: Optional[Path] = None,
+    timeout_seconds: int = 30,
+    completed_keys: Optional[Set[Tuple[str, str]]] = None,
+    skip_proofs: Optional[Set[str]] = None,
+    skip_attempted: bool = False,
+    mark_attempted: bool = False,
 ) -> List[ProofMetrics]:
     if skip_clone:
         owner, name = repo.split("/")
@@ -388,7 +509,6 @@ def collect_metrics_for_repo(
 
     proof_dirs = find_proof_dirs(repo_dir)
 
-    # for single proofs
     if proof_filter:
         proof_dirs = [pd for pd in proof_dirs if pd.name == proof_filter]
 
@@ -396,14 +516,60 @@ def collect_metrics_for_repo(
         print(f"[WARN] No proof directories found in {repo_dir}")
         return []
 
+    completed_keys = completed_keys or set()
+    skip_proofs = skip_proofs or set()
+
     metrics_list: List[ProofMetrics] = []
     for pd in proof_dirs:
+        proof_id = pd.name
+
+        # 1) Hard skip list
+        if proof_id in skip_proofs:
+            print(f"[INFO] Skipping proof (in skip list): {repo} / {proof_id}")
+            continue
+
+        # 2) Resume skip from CSV
+        if (repo, proof_id) in completed_keys:
+            print(f"[INFO] Skipping already-completed proof: {repo} / {proof_id}")
+            continue
+
+        # 3) Optional: skip proofs already attempted (marker file)
+        marker_path = pd / ATTEMPT_MARKER
+        if skip_attempted and marker_path.exists():
+            print(f"[INFO] Skipping already-attempted proof (marker): {repo} / {proof_id}")
+            continue
+
         try:
-            pm = collect_metrics_for_proof(repo, pd, run_cbmc_flag=run_cbmc_flag)
+            pm = collect_metrics_for_proof(
+                repo,
+                pd,
+                run_cbmc_flag=run_cbmc_flag,
+                timeout_seconds=timeout_seconds,
+            )
+
+            # Mark attempted regardless of outcome (optional)
+            if mark_attempted:
+                try:
+                    marker_path.write_text("attempted\n", encoding="utf-8")
+                except Exception as e:
+                    print(f"[WARN] Could not write attempt marker {marker_path}: {e}")
+
+            if pm is None:
+                continue  # timed out; skip
+
             metrics_list.append(pm)
             if output_path is not None:
                 append_metrics_row(pm, output_path)
+                completed_keys.add((repo, proof_id))  # skip within this run too
+
         except Exception as e:
+            # Still mark attempted on exception if enabled
+            if mark_attempted:
+                try:
+                    marker_path.write_text("attempted\n", encoding="utf-8")
+                except Exception as e2:
+                    print(f"[WARN] Could not write attempt marker {marker_path}: {e2}")
+
             print(f"[ERROR] Failed to collect metrics for {repo} / {pd}: {e}", file=sys.stderr)
 
     return metrics_list
@@ -416,6 +582,17 @@ def main() -> None:
         type=str,
         default="cbmc-metrics-workspace",
         help="Directory where repos are cloned/located.",
+    )
+    parser.add_argument(
+        "--proof-timeout",
+        type=int,
+        default=30,
+        help="Skip a proof if its `make` run exceeds this many seconds (only with --run-cbmc).",
+    )
+    parser.add_argument(
+        "--fresh",
+        action="store_true",
+        help="Start a fresh run by deleting the output CSV first (disables resume).",
     )
     parser.add_argument(
         "--output",
@@ -445,18 +622,41 @@ def main() -> None:
         help="If set, only collect metrics for proofs whose directory name matches this id.",
     )
 
+    # NEW: skip controls
+    parser.add_argument(
+        "--skip-proof",
+        action="append",
+        default=[],
+        help="Skip a proof by id (directory name). Can be provided multiple times.",
+    )
+    parser.add_argument(
+        "--skip-attempted",
+        action="store_true",
+        help=f"Skip proofs that already contain the {ATTEMPT_MARKER} marker file.",
+    )
+    parser.add_argument(
+        "--mark-attempted",
+        action="store_true",
+        help=f"Create {ATTEMPT_MARKER} in each proof dir after attempting it (even if it times out/fails).",
+    )
+
     args = parser.parse_args()
     workspace = Path(args.workspace).resolve()
     workspace.mkdir(parents=True, exist_ok=True)
 
     output_path = Path(args.output).resolve()
-    # make sure output directory exists
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    
-    if output_path.exists():
+
+    if args.fresh and output_path.exists():
         output_path.unlink()
 
+    completed = set() if args.fresh else load_completed_keys(output_path)
+
     repos = args.repo or REPOS
+
+    # Combine hard-coded + CLI skip list
+    skip_proofs = set(SKIP_PROOFS)
+    skip_proofs.update([s.strip() for s in (args.skip_proof or []) if s and s.strip()])
 
     for repo in repos:
         print(f"\n[INFO] Processing repo: {repo}")
@@ -467,6 +667,11 @@ def main() -> None:
             run_cbmc_flag=args.run_cbmc,
             proof_filter=args.proof_id,
             output_path=output_path,
+            timeout_seconds=args.proof_timeout,
+            completed_keys=completed,
+            skip_proofs=skip_proofs,
+            skip_attempted=args.skip_attempted,
+            mark_attempted=args.mark_attempted,
         )
 
     print(f"[INFO] Finished. {output_path}")
