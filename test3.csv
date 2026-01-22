@@ -1,5 +1,5 @@
 repo,proof_id,proof_path,loc,files_in_scope,num_preconditions,num_var_models,num_func_models,symex_steps,sat_vars,sat_clauses,max_unwind,runtime_seconds,total_coverage,target_coverage,num_errors
-awslabs/aws-c-common,aws_linked_list_insert_after,/home/kevin/cbmc-metrics/cbmc-metrics-workspace/aws-c-common/verification/cbmc/proofs/aws_linked_list_insert_after,11,1,2,0,0,101,,,-1,2.387,100.0,100.0,0
+awslabs/aws-c-common,aws_linked_list_insert_after,/home/kevin/cbmc-metrics/cbmc-metrics-workspace/aws-c-common/verification/cbmc/proofs/aws_linked_list_insert_after,11,1,2,0,0,101,0,0,-1,2.387,100.0,100.0,0
 awslabs/aws-c-common,aws_array_list_back,/home/kevin/cbmc-metrics/cbmc-metrics-workspace/aws-c-common/verification/cbmc/proofs/aws_array_list_back,10,1,1,0,0,1009,217799,1124178,-1,2.608,97.5609756097561,97.5609756097561,4
 awslabs/aws-c-common,aws_array_list_set_at,/home/kevin/cbmc-metrics/cbmc-metrics-workspace/aws-c-common/verification/cbmc/proofs/aws_array_list_set_at,12,1,1,0,0,2607,441572,103924,0,3.915,85.38011695906432,85.38011695906432,7
 awslabs/aws-c-common,aws_string_eq_c_str,/home/kevin/cbmc-metrics/cbmc-metrics-workspace/aws-c-common/verification/cbmc/proofs/aws_string_eq_c_str,12,1,1,0,0,679,24378,85305,0,4.11,100.0,100.0,0
@@ -11,3 +11,4 @@ awslabs/aws-c-common,aws_ring_buffer_acquire_up_to,/home/kevin/cbmc-metrics/cbmc
 awslabs/aws-c-common,aws_nospec_mask,/home/kevin/cbmc-metrics/cbmc-metrics-workspace/aws-c-common/verification/cbmc/proofs/aws_nospec_mask,6,1,0,0,0,43,5640,3788,-1,1.239,100.0,100.0,0
 FreeRTOS/FreeRTOS-Cellular-Interface,Cellular_CommonUrcProcessCgreg,/home/kevin/cbmc-metrics/cbmc-metrics-workspace/FreeRTOS-Cellular-Interface/test/cbmc/proofs/Cellular_CommonUrcProcessCgreg,10,1,1,0,0,2212,70442,70047,0,2.651,78.57142857142857,78.57142857142857,0
 FreeRTOS/FreeRTOS-Cellular-Interface,Cellular_CommonRegisterUrcGenericCallback,/home/kevin/cbmc-metrics/cbmc-metrics-workspace/FreeRTOS-Cellular-Interface/test/cbmc/proofs/Cellular_CommonRegisterUrcGenericCallback,25,1,1,0,0,2241,73849,72418,0,1.8,78.66108786610879,78.66108786610879,0
+
