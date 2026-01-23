@@ -1,11 +1,12 @@
 repo,proof_id,proof_path,loc,files_in_scope,num_preconditions,num_var_models,num_func_models,symex_steps,sat_vars,sat_clauses,max_unwind,runtime_seconds,total_coverage,target_coverage,num_errors
-awslabs/aws-c-common,aws_nospec_mask,/home/kevin/cbmc-metrics/cbmc-metrics-workspace/aws-c-common/verification/cbmc/proofs/aws_nospec_mask,6,1,0,0,0,31,,,2,2.034,100.0,100.0,0
+awslabs/aws-c-common,aws_nospec_mask,/home/kevin/cbmc-metrics/cbmc-metrics-workspace/aws-c-common/verification/cbmc/proofs/aws_nospec_mask,6,1,0,0,0,31,0,0,2,2.034,100.0,100.0,0
 awslabs/aws-c-common,aws_ring_buffer_acquire_up_to,/home/kevin/cbmc-metrics/cbmc-metrics-workspace/aws-c-common/verification/cbmc/proofs/aws_ring_buffer_acquire_up_to,40,1,11,0,0,2846,22546,21513,2,3.467,98.63945578231292,98.63945578231292,0
 awslabs/aws-c-common,aws_byte_cursor_read_u8,/home/kevin/cbmc-metrics/cbmc-metrics-workspace/aws-c-common/verification/cbmc/proofs/aws_byte_cursor_read_u8,20,1,5,0,0,289,3849,3595,2,2.421,98.38709677419355,98.38709677419355,0
-awslabs/aws-c-common,aws_string_eq_byte_buf,/home/kevin/cbmc-metrics/cbmc-metrics-workspace/aws-c-common/verification/cbmc/proofs/aws_string_eq_byte_buf,11,1,2,0,0,94,,,2,1.393,85.71428571428571,85.71428571428571,0
+awslabs/aws-c-common,aws_string_eq_byte_buf,/home/kevin/cbmc-metrics/cbmc-metrics-workspace/aws-c-common/verification/cbmc/proofs/aws_string_eq_byte_buf,11,1,2,0,0,94,0,0,2,1.393,85.71428571428571,85.71428571428571,0
 awslabs/aws-c-common,aws_byte_buf_init,/home/kevin/cbmc-metrics/cbmc-metrics-workspace/aws-c-common/verification/cbmc/proofs/aws_byte_buf_init,20,1,4,0,0,231,4438,6950,2,1.64,93.54838709677419,93.54838709677419,0
 awslabs/aws-c-common,aws_array_list_clear,/home/kevin/cbmc-metrics/cbmc-metrics-workspace/aws-c-common/verification/cbmc/proofs/aws_array_list_clear,8,1,1,0,0,331,6636,24227,2,1.343,95.55555555555556,95.55555555555556,2
-awslabs/aws-c-common,aws_string_eq_c_str,/home/kevin/cbmc-metrics/cbmc-metrics-workspace/aws-c-common/verification/cbmc/proofs/aws_string_eq_c_str,12,1,1,0,0,93,,,2,1.158,86.66666666666667,86.66666666666667,0
-awslabs/aws-c-common,aws_hash_table_get_entry_count,/home/kevin/cbmc-metrics/cbmc-metrics-workspace/aws-c-common/verification/cbmc/proofs/aws_hash_table_get_entry_count,14,1,3,0,0,111,,,2,2.253,100.0,100.0,0
+awslabs/aws-c-common,aws_string_eq_c_str,/home/kevin/cbmc-metrics/cbmc-metrics-workspace/aws-c-common/verification/cbmc/proofs/aws_string_eq_c_str,12,1,1,0,0,93,0,0,2,1.158,86.66666666666667,86.66666666666667,0
+awslabs/aws-c-common,aws_hash_table_get_entry_count,/home/kevin/cbmc-metrics/cbmc-metrics-workspace/aws-c-common/verification/cbmc/proofs/aws_hash_table_get_entry_count,14,1,3,0,0,111,0,0,2,2.253,100.0,100.0,0
 awslabs/aws-c-common,aws_array_list_back,/home/kevin/cbmc-metrics/cbmc-metrics-workspace/aws-c-common/verification/cbmc/proofs/aws_array_list_back,12,1,1,0,0,878,22310,95179,2,4.374,96.61016949152543,96.61016949152543,4
 awslabs/aws-c-common,aws_array_list_set_at,/home/kevin/cbmc-metrics/cbmc-metrics-workspace/aws-c-common/verification/cbmc/proofs/aws_array_list_set_at,12,1,1,0,0,756,16650,63325,2,5.163,97.1830985915493,97.1830985915493,4
+
